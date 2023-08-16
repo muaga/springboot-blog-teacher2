@@ -5,6 +5,9 @@ server:
       force: true
   port: 8080
 spring:
+  jackson:
+    serialization:
+      fail-on-empty-beans: true
   mustache:
     servlet:
       expose-session-attributes: true
@@ -32,7 +35,7 @@ spring:
   output:
     ansi:
       enabled: always
-      
+
 logging:
   level:
     "[org.hibernate.type]": TRACE

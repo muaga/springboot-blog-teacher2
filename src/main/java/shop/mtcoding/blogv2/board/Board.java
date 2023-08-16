@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,8 +34,10 @@ public class Board {
     @Column(nullable = true, length = 10000)
     private String content;
 
-    @ManyToOne
-    private User user;
+    @ManyToOne(fetch = FetchType.EAGER)
+    // LAZY : user fetch 미실행 = ORM 불필요 = 모순의 불일치가 발생하지 않는다. ; PK값만 가지고 온다.
+    // EAGER : board 조회시 반드시 fetch 실행 = ORM 필요 = 모순의 불일치를 해결해야 한다. ; 디폴트값
+    private User user; // 1+N
 
     @CreationTimestamp // insert할 때 자동으로 시간을 넣어 준다. - Test시에도 유용
     private Timestamp createdAt;
@@ -47,5 +50,4 @@ public class Board {
         this.user = user;
         this.createdAt = createdAt;
     }
-
 }

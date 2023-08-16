@@ -27,7 +27,8 @@ public class UserQueryRepository {
     // select
     // 사용은 JpaRepository로 사용
     public User findById(Integer id) {
-        // Query query = em.createQuery("select u from User as u where u.id = :id", User.class);
+        // Query query = em.createQuery("select u from User as u where u.id = :id",
+        // User.class);
         // query.setParameter("id", id);
         // return (User) query.getSingleResult();
         //
@@ -36,6 +37,14 @@ public class UserQueryRepository {
 
         // 둘의 차이
         // 쿼리 -> 요청마다 쿼리를 보낸다
-        // find -> 1차 캐시 후 PC에 존재하지 않으면, 쿼리를 보낸다. 
+        // find -> 1차 캐시 후 PC에 존재하지 않으면, 쿼리를 보낸다.
+    }
+
+    // JPQL 버전의 findByUsername
+    public User findByUsername(String username) {
+        Query query = em.createQuery("select * from user_tb where username = :username", User.class);
+        // createQuery = JPQL
+        query.setParameter("username", username);
+        return (User) query.getSingleResult();
     }
 }

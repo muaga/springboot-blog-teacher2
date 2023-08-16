@@ -76,4 +76,15 @@ public class UserController {
         session.setAttribute("sessionUser", user);
         return "redirect:/";
     }
+
+    // 로그아웃
+    // 브라우저가 GET으로 "/logout" 요청함(request 생성)
+    // 서버는 "/" 주소를 응답의 header에 담음(Location, 상태코드 302)
+    // 브라우저는 GET "/"로 재요청함(request 2 생성)
+    // index 페이지 응답받고 렌더링함
+    @GetMapping("/logout")
+    public String logout() {
+        session.invalidate();
+        return "redirect:/";
+    }
 }
