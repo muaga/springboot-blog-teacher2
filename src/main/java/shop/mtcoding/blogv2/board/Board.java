@@ -36,7 +36,7 @@ public class Board {
     @ManyToOne
     private User user;
 
-    @CreationTimestamp
+    @CreationTimestamp // insert할 때 자동으로 시간을 넣어 준다. - Test시에도 유용
     private Timestamp createdAt;
 
     @Builder
