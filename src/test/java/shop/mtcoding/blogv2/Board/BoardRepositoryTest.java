@@ -3,6 +3,7 @@ package shop.mtcoding.blogv2.Board;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,37 @@ public class BoardRepositoryTest {
 
     @Autowired
     private BoardRepository boardRepository; // 현재 null
+
+    @Test
+    public void deleteById_test() {
+        boardRepository.findAll();
+        boardRepository.deleteById(6);
+        System.out.println("delete 성공");
+        Optional<Board> boardOP = boardRepository.findById(6);
+        if (boardOP.isPresent()) {
+            System.out.println("테스트 : board가 있습니다.");
+        } else {
+            System.out.println("테스트 : board가 없습니다.");
+        }
+    }
+
+    @Test
+    public void findById_test() {
+        Optional<Board> boardOP = boardRepository.findById(5);
+        if (boardOP.isPresent()) {
+            System.out.println("테스트 : board가 있습니다.");
+        }
+        // JpaRepository에서 find를 사용할 때,
+        // 화면에서 필요한 데이터가 뭔 지를 잘 파악하고
+        // Lazy 전략이 필요한 지 Eager 전략이 필요한 지 잘 선택해야 한다.
+        // ★★★ 그런데, findById에서는 user정보가 필요하고, findByAll에서는 user정보가 필요없다고 할 때
+        // findById때문에, Eager 전략으로 바뀌면 findByAll도 Eager전략으로 바뀌어서 실행쿼리 갯수가 많아진다.
+        // 불필요한 쿼리 실행이 많아지므로
+        // 아예 Lazy 전략으로 고정시킨 다음, findById와 같이 user정보도 필요하다면
+        // LazyLoading을 사용하지 말고,
+        // 그냥 join을 하는 쿼리를 짜는 것이 쿼리를 딱 1번만 실행하게 할 수 있기 때문에 좋다.
+        // Test 화면에서 실행쿼리를 확인해보는 것도 좋다.
+    }
 
     // paging - findAll 이용하기
     // 페이지에 따라 true/false를 자동해준다.

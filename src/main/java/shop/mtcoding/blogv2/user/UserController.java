@@ -66,7 +66,7 @@ public class UserController {
         return "user/updateForm";
     }
 
-    // 회원정보보기 기능
+    // 회원정보수정 기능
     @PostMapping("/user/update")
     public String update(UserRequest.UpdateDTO updateDTO) {
         // 1. 회원수정(서비스)

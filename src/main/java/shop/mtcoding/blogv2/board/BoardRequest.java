@@ -16,4 +16,12 @@ public class BoardRequest {
         private String title;
         private String content;
     }
+
+    // 수정
+    @Getter
+    @Setter
+    public static class UpdateDTO {
+        private String title;
+        private String content;
+    }
 }
