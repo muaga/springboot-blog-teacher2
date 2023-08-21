@@ -22,6 +22,9 @@ public class BoardController {
     @Autowired
     private BoardService boardService;
 
+    @Autowired
+    private BoardRepository boardRepository;
+
     // 글 삭제 기능
     @PostMapping("/board/{id}/delete")
     public @ResponseBody String delete(@PathVariable Integer id) {

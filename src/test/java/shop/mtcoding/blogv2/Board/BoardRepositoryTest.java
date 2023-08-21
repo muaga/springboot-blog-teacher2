@@ -29,6 +29,26 @@ public class BoardRepositoryTest {
     private BoardRepository boardRepository; // 현재 null
 
     @Test
+    public void mfindByIdJoinUserNReply_test() {
+        Board board = boardRepository.mfindByIdJoinReplyInUseBoard(1).get();
+        System.out.println("board : id : " + board.getId());
+        System.out.println("board : title : " + board.getTitle());
+        System.out.println("board : content : " + board.getContent());
+        System.out.println("board : createdAt : " + board.getCreatedAt());
+        System.out.println("===========================================");
+        System.out.println("board in user : id : " + board.getUser().getId()); // board 작성자 = user라면, LazyLoading 실행 X /
+                                                                               // 동일인물이라서 1차 캐싱 발생
+        System.out.println("board in user : username : " + board.getUser().getUsername());
+        System.out.println("===========================================");
+        board.getReplies().stream().forEach(r -> {
+            System.out.println("board in replies : id : " + r.getId());
+            System.out.println("board in replies : id : " + r.getComment());
+            System.out.println("board in replies : id : " + r.getUser().getId());
+        });
+        // 추가적인 LazyLoading이 나오면 안된다.
+    }
+
+    @Test
     public void deleteById_test() {
         boardRepository.findAll();
         boardRepository.deleteById(6);
@@ -47,16 +67,6 @@ public class BoardRepositoryTest {
         if (boardOP.isPresent()) {
             System.out.println("테스트 : board가 있습니다.");
         }
-        // JpaRepository에서 find를 사용할 때,
-        // 화면에서 필요한 데이터가 뭔 지를 잘 파악하고
-        // Lazy 전략이 필요한 지 Eager 전략이 필요한 지 잘 선택해야 한다.
-        // ★★★ 그런데, findById에서는 user정보가 필요하고, findByAll에서는 user정보가 필요없다고 할 때
-        // findById때문에, Eager 전략으로 바뀌면 findByAll도 Eager전략으로 바뀌어서 실행쿼리 갯수가 많아진다.
-        // 불필요한 쿼리 실행이 많아지므로
-        // 아예 Lazy 전략으로 고정시킨 다음, findById와 같이 user정보도 필요하다면
-        // LazyLoading을 사용하지 말고,
-        // 그냥 join을 하는 쿼리를 짜는 것이 쿼리를 딱 1번만 실행하게 할 수 있기 때문에 좋다.
-        // Test 화면에서 실행쿼리를 확인해보는 것도 좋다.
     }
 
     // paging - findAll 이용하기

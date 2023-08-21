@@ -1,9 +1,11 @@
 package shop.mtcoding.blogv2.board;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /*
  * @Repository 생략이 가능한 JpaRepository
@@ -22,4 +24,9 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
     @Query("select b from Board as b join b.user")
     List<Board> mFindAll();
     // JPQL에서 innerjoin = join
+
+    // join 시 화면에 보이는 것 부터 쿼리 작성 후, 필요한 데이터를 추가로 작성하면 된다.
+    @Query("select b from Board as b left join fetch b.replies as r left join fetch r.user as ru where b.id = :id")
+    Optional<Board> mfindByIdJoinReplyInUseBoard(@Param("id") Integer id);
+
 }

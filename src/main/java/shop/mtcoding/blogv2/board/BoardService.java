@@ -42,7 +42,12 @@ public class BoardService {
     }
 
     public Board 상세보기(Integer id) {
-        return boardRepository.findById(id).get();
+        Optional<Board> boardOP = boardRepository.mfindByIdJoinReplyInUseBoard(id);
+        if (boardOP.isPresent()) {
+            return boardOP.get();
+        } else {
+            throw new RuntimeException(id + "는 찾을 수 없습니다.");
+        }
     }
 
     @Transactional
