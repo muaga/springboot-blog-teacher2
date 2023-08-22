@@ -7,8 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import shop.mtcoding.blogv2._core.error.ex.MyApiException;
+import shop.mtcoding.blogv2._core.error.ex.MyException;
+import shop.mtcoding.blogv2._core.util.ApiUtil;
 import shop.mtcoding.blogv2._core.util.Script;
 
 @Controller
@@ -30,11 +34,33 @@ public class UserController {
 
     // 회원가입 기능
     // M - V - C
-    @PostMapping("/join")
-    public String join(UserRequest.joinDTO joinDTO) {
+    // @PostMapping("/join")
+    public String join(UserRequest.JoinDTO joinDTO) {
         userService.회원가입(joinDTO);
         // service에게 위임
         return "user/loginForm"; // 응답으로 persist 초기화
+    }
+
+    // 회원가입
+    @PostMapping("/api/join")
+    public @ResponseBody ApiUtil<String> save(@RequestBody UserRequest.JoinDTO joinDTO) {
+        // 예외에 대비한 대비코드
+        User user = userService.유저찾기(joinDTO.getUsername());
+        if (user != null) {
+            throw new MyApiException("동일한 유저네임이 존재합니다.");
+        }
+        userService.회원가입(joinDTO);
+        return new ApiUtil<String>(true, "회원가입 성공");
+    }
+
+    // 유저체크
+    @GetMapping("/api/userCheck")
+    public @ResponseBody ApiUtil<String> check(String username) {
+        User user = userService.유저찾기(username);
+        if (user != null) {
+            throw new MyApiException("동일한 유저네임이 존재합니다.");
+        }
+        return new ApiUtil<String>(true, "유저네임을 사용할 수 있습니다.");
     }
 
     // 로그인 페이지
@@ -47,9 +73,6 @@ public class UserController {
     @PostMapping("/login")
     public @ResponseBody String login(UserRequest.LoginDTO loginDTO) {
         User sessionUser = userService.로그인(loginDTO);
-        if (sessionUser == null) {
-            return Script.back("로그인 실패");
-        }
         session.setAttribute("sessionUser", sessionUser);
         return Script.href("/"); // = "redirect"
     }

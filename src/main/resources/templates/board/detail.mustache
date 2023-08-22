@@ -6,7 +6,6 @@
     <div class="d-flex justify-content-end">
         <a class="btn btn-warning me-1" href="/board/{{board.id}}/updateForm">수정</a>
         <form action="/board/{{board.id}}/delete" method="post">
-
             <button type="submit" class="btn btn-danger">삭제</button>
         </form>
     </div>
@@ -22,13 +21,15 @@
 
     <!-- 댓글 -->
     <div class="card mt-3">
-        <!-- 댓글등록 -->
+        <!-- 자바스크립트로 댓글등록 -->
+        <!-- name이 없는 이유 : json형태로, submit으로 등록하지 않을 것이기 때문에-->
         <div class="card-body">
-            <form action="/reply/save" method="post">
-                <input type="hidden" name="boardId" value="{{board.id}}">
-                <textarea class="form-control" rows="2" name="comment"></textarea>
+            <form>
+                <input type="hidden" id="boardId" value="{{board.id}}">
+                <textarea class="form-control" rows="2" id="comment"></textarea>
+                <!-- 1 -->
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-outline-primary mt-1">댓글등록</button>
+                    <button type="button" class="btn btn-outline-primary mt-1" onclick="saveReply()">댓글등록</button>
                 </div>
             </form>
         </div>
@@ -45,14 +46,59 @@
                     <div class="px-1 me-1 bg-primary text-white rounded">{{user.username}}</div>
                     <div>{{comment}}</div>
                 </div>
-                <form action="/reply/{{id}}/delete" method="post">
-                    <input type="hidden" name="boardId" value="{{board.id}}">
-                    <button class="btn">🗑</button>
+                <form>
+                    <button type="button" class="btn" onclick="deleteReply('{{id}}')">🗑</button>
                 </form>
             </div>
             {{/board.replies}}
         </div>
     </div>
 </div>
+
+<script>
+    async function saveReply() {
+        // 사용자가 작성한 댓글 데이터를 받아오기
+        let requestBody = {
+            boardId: document.querySelector("#boardId").value,
+            comment: document.querySelector("#comment").value
+        };  // 2 
+        // * 값을 제대로 받아오는 지 확인하기
+        // console.log(requestBody);
+
+        let response = await fetch("/api/reply/save", {
+            method: "post",
+            headers: {
+                "content-type": "application/json" // MIME
+            },
+            body: JSON.stringify(requestBody)
+        }); //3 -> Controller
+
+        // 서버로 받은 응답
+        let responseBody = await response.json();
+        console.log(responseBody)
+
+        // return 값 확인 -> 출력
+        if (responseBody.success) {
+            location.reload(); // ssr - 새로고침
+        } else {
+            alert(responseBody.data);
+        }
+    }
+
+    async function deleteReply(id) {
+        let response = await fetch(`/api/reply/${id}/delete`, {
+            method: "delete" // 요청의 바디가 없다.
+        });
+
+        let responseBody = await response.json();
+
+        if (responseBody.success) {
+            location.reload();
+        } else {
+            alert(responseBody.data);
+        }
+    }
+
+</script>
 
 {{> layout/footer}}

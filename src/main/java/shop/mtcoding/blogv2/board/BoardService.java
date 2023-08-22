@@ -10,6 +10,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import shop.mtcoding.blogv2._core.error.ex.MyException;
+import shop.mtcoding.blogv2.reply.Reply;
+import shop.mtcoding.blogv2.reply.ReplyRepository;
 import shop.mtcoding.blogv2.user.User;
 
 // 1. 비즈니스로직 처리(핵심로직)
@@ -20,6 +24,9 @@ import shop.mtcoding.blogv2.user.User;
 public class BoardService {
     @Autowired
     private BoardRepository boardRepository;
+
+    @Autowired
+    private ReplyRepository replyRepository;
 
     @Transactional
     public void 글쓰기(BoardRequest.SaveDTO saveDTO, int sessionUserId) {
@@ -46,7 +53,7 @@ public class BoardService {
         if (boardOP.isPresent()) {
             return boardOP.get();
         } else {
-            throw new RuntimeException(id + "는 찾을 수 없습니다.");
+            throw new MyException(id + "는 찾을 수 없습니다.");
         }
     }
 
@@ -67,10 +74,17 @@ public class BoardService {
 
     @Transactional
     public void 글삭제하기(Integer id) {
+        // List<Reply> replies = replyRepository.findByBoardId(id);
+        // for (Reply reply : replies) {
+        // reply.setBoard(null);
+        // replyRepository.save(reply);
+        // }
+        // 게시물을 삭제했으나, 댓글은 남길 때
+
         try {
             boardRepository.deleteById(id);
         } catch (Exception e) {
-            throw new RuntimeException("100번은 없어요");
+            throw new MyException(id + "는 찾을 수 없습니다.");
             // 가장 좋은 것은 Contorller에게까지 오류를 전가
         }
         // reposioty에서는 throws를 사용하지 말고, try-catch를 사용한다.

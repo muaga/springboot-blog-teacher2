@@ -8,7 +8,7 @@ public class UserRequest {
     // 회원가입 DTO
     @Setter
     @Getter
-    public static class joinDTO {
+    public static class JoinDTO {
         private String username;
         private String password;
         private String email;

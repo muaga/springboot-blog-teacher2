@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,8 +42,8 @@ public class Board {
     @Column(nullable = true, length = 10000)
     private String content;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    // @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
     // LAZY : user fetch 미실행 = ORM 불필요 = 모순의 불일치가 발생하지 않는다. ; PK값만 가지고 온다.
     // EAGER : board 조회시 반드시 fetch 실행 = ORM 필요 = 모순의 불일치를 해결해야 한다. ; 디폴트값
     private User user; // 1+N
@@ -54,7 +55,9 @@ public class Board {
     @JsonIgnoreProperties("board")
     // 그 객체 안의 필드를 JSON으로 직렬화하지 않도록 한다.
     // reply 속 내부
-    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    // cascade : 영속성 전이
+    // 댓글이 존재하는데, 게시물을 지웠을 때 - 댓글도 지워지도록
     private List<Reply> replies = new ArrayList<>();
 
     @CreationTimestamp // insert할 때 자동으로 시간을 넣어 준다. - Test시에도 유용

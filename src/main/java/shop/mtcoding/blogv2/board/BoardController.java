@@ -73,6 +73,11 @@ public class BoardController {
         return "index";
     }
 
+    // 글 검색 결과 페이지
+    // @GetMapping("/api/board")
+    // pubilc @ResponseBody keyword(String keyword, @RequestParam(defaultValue =
+    // "0") Integer page)
+
     // 글쓰기 페이지
     @GetMapping("/board/saveForm")
     public String saveForm() {

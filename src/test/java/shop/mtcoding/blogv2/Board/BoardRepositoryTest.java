@@ -31,20 +31,22 @@ public class BoardRepositoryTest {
     @Test
     public void mfindByIdJoinUserNReply_test() {
         Board board = boardRepository.mfindByIdJoinReplyInUseBoard(1).get();
-        System.out.println("board : id : " + board.getId());
-        System.out.println("board : title : " + board.getTitle());
-        System.out.println("board : content : " + board.getContent());
-        System.out.println("board : createdAt : " + board.getCreatedAt());
-        System.out.println("===========================================");
-        System.out.println("board in user : id : " + board.getUser().getId()); // board 작성자 = user라면, LazyLoading 실행 X /
-                                                                               // 동일인물이라서 1차 캐싱 발생
-        System.out.println("board in user : username : " + board.getUser().getUsername());
-        System.out.println("===========================================");
-        board.getReplies().stream().forEach(r -> {
-            System.out.println("board in replies : id : " + r.getId());
-            System.out.println("board in replies : id : " + r.getComment());
-            System.out.println("board in replies : id : " + r.getUser().getId());
-        });
+        // System.out.println("board : id : " + board.getId());
+        // System.out.println("board : title : " + board.getTitle());
+        // System.out.println("board : content : " + board.getContent());
+        // System.out.println("board : createdAt : " + board.getCreatedAt());
+        // System.out.println("===========================================");
+        // System.out.println("board in user : id : " + board.getUser().getId()); //
+        // board 작성자 = user라면, LazyLoading 실행 X /
+        // // 동일인물이라서 1차 캐싱 발생
+        // System.out.println("board in user : username : " +
+        // board.getUser().getUsername());
+        // System.out.println("===========================================");
+        // board.getReplies().stream().forEach(r -> {
+        // System.out.println("board in replies : id : " + r.getId());
+        // System.out.println("board in replies : id : " + r.getComment());
+        // System.out.println("board in replies : id : " + r.getUser().getId());
+        // });
         // 추가적인 LazyLoading이 나오면 안된다.
     }
 
