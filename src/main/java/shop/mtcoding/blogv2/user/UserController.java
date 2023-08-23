@@ -34,8 +34,13 @@ public class UserController {
 
     // 회원가입 기능
     // M - V - C
-    // @PostMapping("/join")
+    @PostMapping("/join")
     public String join(UserRequest.JoinDTO joinDTO) {
+        // System.out.println(joinDTO.getPic().getOriginalFilename());
+        // System.out.println(joinDTO.getPic().getSize());
+        // System.out.println(joinDTO.getPic().getContentType());
+
+        // 파일을 8바이트로 변환
         userService.회원가입(joinDTO);
         // service에게 위임
         return "user/loginForm"; // 응답으로 persist 초기화

@@ -1,13 +1,23 @@
 {{> layout/header}}
-
+<style>
+    .circle_avatar {
+        width: 200px;
+        height: 200px;
+        border-radius: 100px;
+    }
+</style>
 <div class="container p-5">
 
     <div class="card">
         <div class="card-header"><b>회원수정을 해주세요</b></div>
+        <div class="card-header d-flex justify-content-center">
+            <img class="circle_avatar" src="/images/{{user.picUrl}}">
+        </div>
         <div class="card-body">
             <form action="/user/update" method="post">
                 <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="Enter username" value="{{user.username}}" disabled>
+                    <input type="text" class="form-control" placeholder="Enter username" value="{{user.username}}"
+                        disabled>
                     <!-- value를 사용자에게 받을 필요가 없는 경우, name은 지워도 된다.-->
                 </div>
                 <div class="mb-3">

@@ -49,6 +49,7 @@ public class ReplyController {
             // return new ApiUtil<String>(false, "인증이 되지 않았습니다.");
             // 이렇게 하면, 모든 exception을 DS에게 보내려고 했지만 거기는 JS로 처리하는 곳이라서 기능이 틀리다.
             throw new MyApiException("인증되지 않았습니다.");
+            // = return new ApiUtil<String>(false, "인증되지 않았습니다.");
         }
         replyService.댓글쓰기(saveDTO, sessionUser.getId());
         return new ApiUtil<String>(true, "댓글쓰기 성공");
