@@ -64,7 +64,7 @@ public class BoardController {
 
     // 글 목록 페이지
     // localhost:8080?page=1&keyword=바나나
-    @GetMapping("/")
+    // @GetMapping("/")
     public String index(@RequestParam(defaultValue = "0") Integer page, HttpServletRequest request) {
         Page<Board> boardPG = boardService.게시글목록보기(page);
         request.setAttribute("boardPG", boardPG);
@@ -74,9 +74,19 @@ public class BoardController {
     }
 
     // 글 검색 결과 페이지
-    // @GetMapping("/api/board")
-    // pubilc @ResponseBody keyword(String keyword, @RequestParam(defaultValue =
-    // "0") Integer page)
+    @GetMapping("/")
+    public String index(String keyword, @RequestParam(defaultValue = "0") Integer page, HttpServletRequest request) {
+        Page<Board> boardPG = null;
+        if (keyword == null || keyword.trim().isEmpty()) {
+            boardPG = boardService.게시글목록보기(page);
+        } else {
+            boardPG = boardService.검색후게시글목록보기(page, keyword);
+        }
+        request.setAttribute("boardPG", boardPG);
+        request.setAttribute("prevPage", boardPG.getNumber() - 1);
+        request.setAttribute("nextPage", boardPG.getNumber() + 1);
+        return "index";
+    }
 
     // 글쓰기 페이지
     @GetMapping("/board/saveForm")

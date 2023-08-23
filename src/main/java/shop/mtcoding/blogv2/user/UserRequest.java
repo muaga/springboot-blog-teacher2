@@ -31,6 +31,8 @@ public class UserRequest {
     @Getter
     public static class UpdateDTO {
         private String password;
+        private MultipartFile pic;
+        // name 값을 잘 적어야한다.
 
     }
     // 데이터를 1개 받을 때는 DTO를 굳이 만들 필요 없다.

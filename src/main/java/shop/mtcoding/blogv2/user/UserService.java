@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import shop.mtcoding.blogv2._core.error.ex.MyException;
+import shop.mtcoding.blogv2._core.util.FileWrite;
+import shop.mtcoding.blogv2._core.vo.MyDefault;
 import shop.mtcoding.blogv2._core.vo.MyPath;
 import shop.mtcoding.blogv2.user.UserRequest.LoginDTO;
 import shop.mtcoding.blogv2.user.UserRequest.UpdateDTO;
@@ -28,20 +30,27 @@ public class UserService {
         // 1. 파일명에 랜덤한 해시값을 만들어준다. = 충돌방지
         UUID uuid = UUID.randomUUID();
         // uuid : 전세계에서 유일한 식별자를 만들어 주는 표준 규약
-        String fileName = uuid + "_" + joinDTO.getPic().getOriginalFilename(); // getOriginalFilename은 확장자를 가지고 있어 제일 뒤에
-                                                                               // 위치해야 한다.
-        System.out.println("fileName : " + fileName);
 
-        // 2. 경로지정(./ = 상대경로)
-        // 상대경로가 좋은 점. OS가 다르면 절대경로 사용시 경로가 오류날 수 있다. 그래서 상대경로가 가장 좋다.
-        // 프로젝트 실행 파일변경 -> blogv2-1.0.jar(build-gradel에서 version을 변경했다.)
-        // 해당 실행파일 경로에 images 폴더가 필요함
-        Path filePath = Paths.get(MyPath.IMG_PATH + fileName);
-        try {
-            Files.write(filePath, joinDTO.getPic().getBytes());
-        } catch (Exception e) {
-            // 폴더, 경로, 파일 등의 오류 처리
-            throw new MyException(e.getMessage());
+        String fileName = null;
+        if (joinDTO.getPic().isEmpty()) {
+            fileName = MyDefault.DEFAULT_PROFILE_FILENAME;
+            System.out.println("fileName1 : " + fileName);
+        } else {
+            fileName = uuid + "_" + joinDTO.getPic().getOriginalFilename();
+            // getOriginalFilename은 확장자를 가지고 있어 제일 뒤에 위치해야 한다.
+            System.out.println("fileName2 : " + fileName);
+
+            // 2. 경로지정(./ = 상대경로)
+            // 상대경로가 좋은 점. OS가 다르면 절대경로 사용시 경로가 오류날 수 있다. 그래서 상대경로가 가장 좋다.
+            // 프로젝트 실행 파일변경 -> blogv2-1.0.jar(build-gradel에서 version을 변경했다.)
+            // 해당 실행파일 경로에 images 폴더가 필요함
+            Path filePath = Paths.get(MyPath.IMG_PATH + fileName);
+            try {
+                Files.write(filePath, joinDTO.getPic().getBytes());
+            } catch (Exception e) {
+                // 폴더, 경로, 파일 등의 오류 처리
+                throw new MyException(e.getMessage());
+            }
         }
 
         User user = User.builder()
@@ -80,14 +89,18 @@ public class UserService {
 
     @Transactional
     public User 회원정보수정(UpdateDTO updateDTO, Integer id) {
-        // 1. 조회 (영속화)
         User user = userRepository.findById(id).get();
-
-        // 2. 변경
+        if (updateDTO.getPic().isEmpty()) {
+            String fileName = user.getPicUrl();
+            user.setPicUrl(fileName);
+        } else {
+            String fileName = FileWrite.save(updateDTO.getPic());
+            user.setPicUrl(fileName);
+        }
         user.setPassword(updateDTO.getPassword());
 
         return user;
-    } // 3. flush
+    }
 
     public User 유저찾기(String username) {
         User user = userRepository.findByUsername(username);

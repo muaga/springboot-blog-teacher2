@@ -11,10 +11,10 @@
     <div class="card">
         <div class="card-header"><b>회원수정을 해주세요</b></div>
         <div class="card-header d-flex justify-content-center">
-            <img class="circle_avatar" src="/images/{{user.picUrl}}">
+            <img id="preview" class="circle_avatar" src="/images/{{user.picUrl}}">
         </div>
         <div class="card-body">
-            <form action="/user/update" method="post">
+            <form action="/user/update" method="post" enctype="multipart/form-data">
                 <div class="mb-3">
                     <input type="text" class="form-control" placeholder="Enter username" value="{{user.username}}"
                         disabled>
@@ -26,10 +26,41 @@
                 <div class="mb-3">
                     <input type="email" class="form-control" placeholder="Enter email" value="{{user.email}}" disabled>
                 </div>
+                <div class="mb-3">
+                    <input type="file" class="form-control" placeholder="Enter pic" onchange="changePic(event)"
+                        name="pic">
+                    <!-- 변경된 file의 모든 정보가 "event"에 들어간다.-->
+                </div>
                 <button type="submit" class="btn btn-primary form-control">회원가입수정</button>
             </form>
         </div>
     </div>
 </div>
+
+<script> // 이미지 띄우는 함수
+    function changePic(e1) {
+        console.log(e1); // 콘솔로 확인 후, 0번지에 정보가 있는 것을 확인하기
+        let f = e1.srcElement.files[0]; // 1. files의 [0]에 있는 정보(실제파일 X) 가져오기
+        if (!f.type.match("image.*")) {
+            // type = MIME타입
+            alert("이미지를 등록해주세요.");
+            return;
+        }
+
+        let reader = new FileReader(); // 2. 새로운 파일버퍼에 생성하기 - HW -> 메모리
+        reader.onload = function (e2) {
+            // 3. 파일을 버퍼로 읽어오는 과정에서 e2라는 이벤트가 발동하는데
+            // 이 이벤트는 파일 읽기의 진행 상황을 다루는 이벤트(파일이 완전히 읽혀온 후의 이벤트)
+            // 파일 업로드, 데이터 다운로드 등과 같이 진행 상황이 중요한 작업에 사용
+            console.log("1");
+            let previewEl = document.querySelector("#preview");
+            previewEl.setAttribute("src", e2.target.result);
+            // 4. target : event의 target에 들어가 있는 것을 최종적으로 바꿔줌
+        }
+        reader.readAsDataURL(f); // 4. f에 대한 정보를 reader에 담기(파일읽기)
+        // 콜백함수 : onload()(읽기가 모두 끝난 함수)
+        console.log("2");
+    }
+</script>
 
 {{> layout/footer}}

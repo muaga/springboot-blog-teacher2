@@ -43,9 +43,15 @@ public class BoardService {
         // 매개변수 'page'는 가져올 페이지 번호를 나타낸다.
         Pageable pageable = PageRequest.of(page, 3, Sort.Direction.DESC, "id");
         // Pageable 객체를 생성하고, 페이지 정보를 설정한다.
+        // Sort.Direction.DESC : 내림차순
         return boardRepository.findAll(pageable);
         // findAll 메소드 실행시, pageable을 기준으로
         // 지정된 페이지 번호와 페이지 당 개수, 정렬 정보에 따라 데이터를 가져온다.
+    }
+
+    public Page<Board> 검색후게시글목록보기(Integer Page, String Keyword) {
+        Pageable pageable = PageRequest.of(Page, 3, Sort.Direction.DESC, "id");
+        return boardRepository.findSearchAll(pageable, Keyword);
     }
 
     public Board 상세보기(Integer id) {

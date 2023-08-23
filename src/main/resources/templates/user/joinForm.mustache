@@ -64,8 +64,10 @@
 
         if (responseBody.success) {
             alert(responseBody.data);
+            usernameSameCheck = true;
         } else {
             alert(responseBody.data);
+            usernameSameCheck = false;
         }
     }
 
