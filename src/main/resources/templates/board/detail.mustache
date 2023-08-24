@@ -15,7 +15,9 @@
         <h2><b>{{board.title}}</b></h2>
         <hr />
         <div class="m-4 p-2">
-            {{board.content}}
+            {{{board.content}}}
+            <!-- summernote를 그대로 적용하기 위해(설정 그대로)-->
+            <!-- {{가 2개라면, html 문법을 &lt:로 치환된 그대로 나온다. -->
         </div>
     </div>
 

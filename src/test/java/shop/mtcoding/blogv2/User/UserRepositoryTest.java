@@ -49,7 +49,9 @@ public class UserRepositoryTest {
     @Test
     public void findByUsername_test() {
         User user = userRepository.findByUsername("ssar");
-        System.out.println("테스트 : " + user.getEmail());
+        String loginUserPassword = "1234";
+        // Boolean isVail
+        System.out.println("password : " + user.getPassword());
     } // rollback
 
     @Test

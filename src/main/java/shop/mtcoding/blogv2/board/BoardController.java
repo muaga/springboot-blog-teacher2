@@ -35,7 +35,6 @@ public class BoardController {
             return Script.back("삭제 실패");
         }
         // 이렇게 처리하는 것은 힘들다.
-
     }
 
     // 글 수정 기능

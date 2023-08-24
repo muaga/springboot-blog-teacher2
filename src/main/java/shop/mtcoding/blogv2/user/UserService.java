@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,10 +62,11 @@ public class UserService {
             throw new MyException("유저네임이 없습니다.");
         }
         // 2. 패스워드 검증
-        boolean isValue = BCrypt.checkpw(loginDTO.getPassword(), user.getPassword());
-        System.out.println("login의 password : " + loginDTO.getPassword());
+        String encPassword = BCrypt.hashpw(loginDTO.getPassword(), BCrypt.gensalt());
+        System.out.println("login의 password" + encPassword);
         System.out.println("user의 password : " + user.getPassword());
-        System.out.println("password의 isValue : " + isValue);
+        boolean isValue = BCrypt.checkpw(loginDTO.getPassword(), user.getPassword());
+
         if (isValue == false) {
             throw new MyException("패스워드가 없습니다.");
         }
