@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,41 +28,28 @@ public class UserService {
     // insert / update / delete
     public void 회원가입(UserRequest.JoinDTO joinDTO) {
 
-        // 1. 파일명에 랜덤한 해시값을 만들어준다. = 충돌방지
-        UUID uuid = UUID.randomUUID();
-        // uuid : 전세계에서 유일한 식별자를 만들어 주는 표준 규약
-
         String fileName = null;
+
         if (joinDTO.getPic().isEmpty()) {
             fileName = MyDefault.DEFAULT_PROFILE_FILENAME;
-            System.out.println("fileName1 : " + fileName);
         } else {
-            fileName = uuid + "_" + joinDTO.getPic().getOriginalFilename();
-            // getOriginalFilename은 확장자를 가지고 있어 제일 뒤에 위치해야 한다.
-            System.out.println("fileName2 : " + fileName);
-
-            // 2. 경로지정(./ = 상대경로)
-            // 상대경로가 좋은 점. OS가 다르면 절대경로 사용시 경로가 오류날 수 있다. 그래서 상대경로가 가장 좋다.
-            // 프로젝트 실행 파일변경 -> blogv2-1.0.jar(build-gradel에서 version을 변경했다.)
-            // 해당 실행파일 경로에 images 폴더가 필요함
-            Path filePath = Paths.get(MyPath.IMG_PATH + fileName);
-            try {
-                Files.write(filePath, joinDTO.getPic().getBytes());
-            } catch (Exception e) {
-                // 폴더, 경로, 파일 등의 오류 처리
-                throw new MyException(e.getMessage());
-            }
+            fileName = FileWrite.save(joinDTO.getPic());
         }
+        System.out.println("password1 : " + joinDTO.getPassword());
+
+        String encPassword = BCrypt.hashpw(joinDTO.getPassword(), BCrypt.gensalt());
+        System.out.println("password2 : " + encPassword);
 
         User user = User.builder()
                 .username(joinDTO.getUsername())
-                .password(joinDTO.getPassword())
+                .password(encPassword)
                 .email(joinDTO.getEmail())
                 .picUrl(fileName)
                 // DB에는 파일경로를 넣을 것이기 때문에
                 // 파일경로 이름을 저장할 때, 파일의 이름만 저장해놓는 것이 좋다.
                 // 왜냐하면 경로가 나중에 변경될 수 있는데, 경로가 변경되면 DB도 변경해야 된다.
                 .build();
+
         userRepository.save(user); // em.persist
         // JpaRepository를 사용할 때 entity 자리는 명시한 타입인 User만 들어갈 수 있다.
     }
@@ -73,7 +61,11 @@ public class UserService {
             throw new MyException("유저네임이 없습니다.");
         }
         // 2. 패스워드 검증
-        if (!user.getPassword().equals(loginDTO.getPassword())) {
+        boolean isValue = BCrypt.checkpw(loginDTO.getPassword(), user.getPassword());
+        System.out.println("login의 password : " + loginDTO.getPassword());
+        System.out.println("user의 password : " + user.getPassword());
+        System.out.println("password의 isValue : " + isValue);
+        if (isValue == false) {
             throw new MyException("패스워드가 없습니다.");
         }
         // 3. 로그인 성공
@@ -90,14 +82,19 @@ public class UserService {
     @Transactional
     public User 회원정보수정(UpdateDTO updateDTO, Integer id) {
         User user = userRepository.findById(id).get();
+
+        String fileName = null;
+
         if (updateDTO.getPic().isEmpty()) {
-            String fileName = user.getPicUrl();
+            fileName = user.getPicUrl();
             user.setPicUrl(fileName);
         } else {
-            String fileName = FileWrite.save(updateDTO.getPic());
-            user.setPicUrl(fileName);
+            fileName = FileWrite.save(updateDTO.getPic());
         }
-        user.setPassword(updateDTO.getPassword());
+        user.setPicUrl(fileName);
+
+        String encPassword = BCrypt.hashpw(updateDTO.getPassword(), BCrypt.gensalt());
+        user.setPassword(encPassword);
 
         return user;
     }
